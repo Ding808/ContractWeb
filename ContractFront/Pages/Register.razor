@@ -1,0 +1,35 @@
+﻿@page "/register"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<h3>Register</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color: red">@errorMessage</p>
+}
+
+<input @bind="Username" placeholder="Username" />
+<input @bind="Email" placeholder="Email" />
+<input @bind="Password" type="password" placeholder="Password" />
+<button @onclick="RegisterUser">Register</button>
+
+@code {
+    private string Username { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private string errorMessage;
+
+    private async Task RegisterUser()
+    {
+        var success = await AuthService.Register(Username, Email, Password);
+        if (success)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            errorMessage = "Registration failed.";
+        }
+    }
+}

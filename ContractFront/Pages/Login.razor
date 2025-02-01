@@ -1,0 +1,40 @@
+﻿@page "/login"
+
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<h3>User Login</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
+
+<div>
+    <label>UserName:</label>
+    <input @bind="Username" class="form-control" />
+</div>
+<div>
+    <label>Password:</label>
+    <input type="password" @bind="Password" class="form-control" />
+</div>
+<button @onclick="HandleLogin" class="btn btn-primary">登录</button>
+
+@code {
+    private string Username { get; set; }
+    private string Password { get; set; }
+    private string ErrorMessage { get; set; }
+
+    private async Task HandleLogin()
+    {
+        bool success = await AuthService.Login(Username, Password);
+        if (success)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            ErrorMessage = "Login Fail";
+        }
+    }
+}

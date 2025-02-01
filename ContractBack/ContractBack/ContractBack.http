@@ -1,0 +1,6 @@
+@ContractBack_HostAddress = http://localhost:5111
+
+GET {{ContractBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
