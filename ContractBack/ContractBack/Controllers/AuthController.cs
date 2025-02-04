@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
             var tokenString = GenerateJWTToken(user);
             return Ok(new { Token = tokenString });
         }
-        return Unauthorized(new { message = "用户名或密码错误" });
+        return Unauthorized(new { message = "Wrong user name or password" });
     }
 
     //User Logout
@@ -111,11 +111,11 @@ public class AuthController : ControllerBase
         if (user == null)
             return BadRequest(new { message = "User not found" });
 
-        // 生成 6 位数验证码
+        //create 6 diget code
         var code = new Random().Next(100000, 999999).ToString();
         await _userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordReset", code);
 
-        // 发送邮件
+        // sent email
         var message = $"Your password reset verification code is: {code}";
         await _emailService.SendEmailAsync(model.Email, "Password Reset Code", message);
 
