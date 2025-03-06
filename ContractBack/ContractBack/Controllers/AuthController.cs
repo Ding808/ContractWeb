@@ -31,6 +31,13 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        // check if the email is registered
+        var existingUser = await _userManager.FindByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            return BadRequest(new { message = "Email is already registered." });
+        }
+
         var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
@@ -39,6 +46,7 @@ public class AuthController : ControllerBase
         }
         return BadRequest(result.Errors.Select(e => e.Description));
     }
+
 
     // User Loggin
     [HttpPost("login")]
@@ -167,3 +175,4 @@ public class ResetPasswordModel
     public string Code { get; set; }
     public string NewPassword { get; set; }
 }
+

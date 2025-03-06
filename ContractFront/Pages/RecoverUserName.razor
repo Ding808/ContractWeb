@@ -1,5 +1,40 @@
-﻿<h3>RecoverUserName</h3>
+﻿@page "/recover-username"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>Recover Username</h3>
+<p>Insesrt email for username：</p>
+
+<input @bind="Email" placeholder="Email" class="form-control mb-2" />
+<button @onclick="RecoverUsernameAsync" class="btn btn-primary">找回用户名</button>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <p class="text-success mt-2">@Message</p>
+}
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger mt-2">@ErrorMessage</p>
+}
 
 @code {
+    private string Email { get; set; }
+    private string Message { get; set; }
+    private string ErrorMessage { get; set; }
 
+    private async Task RecoverUsernameAsync()
+    {
+        Message = "";
+        ErrorMessage = "";
+        var response = await Http.PostAsJsonAsync("api/auth/recover-username", new { email = Email });
+        if (response.IsSuccessStatusCode)
+        {
+            Message = "User name already sent to your email！";
+        }
+        else
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            ErrorMessage = $"error: {err}";
+        }
+    }
 }

@@ -15,7 +15,6 @@ public class AuthService
         _localStorage = localStorage;
     }
 
-
     public async Task<bool> Login(string username, string password)
     {
         var response = await _httpClient.PostAsJsonAsync("api/auth/login", new { username, password });
@@ -34,7 +33,9 @@ public class AuthService
             var result = JsonSerializer.Deserialize<AuthResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (result != null && !string.IsNullOrEmpty(result.Token))
             {
+                // 保存 token 与用户名
                 await _localStorage.SetItemAsync("authToken", result.Token);
+                await _localStorage.SetItemAsync("username", username);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
                 return true;
             }
@@ -46,7 +47,6 @@ public class AuthService
 
         return false;
     }
-
 
     public async Task<bool> Register(string username, string email, string password)
     {
@@ -60,17 +60,21 @@ public class AuthService
         return response.IsSuccessStatusCode;
     }
 
-
     public async Task Logout()
     {
         await _localStorage.RemoveItemAsync("authToken");
+        await _localStorage.RemoveItemAsync("username");
         _httpClient.DefaultRequestHeaders.Authorization = null;
     }
-
 
     public async Task<string> GetToken()
     {
         return await _localStorage.GetItemAsync<string>("authToken");
+    }
+
+    public async Task<string> GetUsername()
+    {
+        return await _localStorage.GetItemAsync<string>("username");
     }
 
     public async Task Initialize()

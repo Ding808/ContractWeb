@@ -1,7 +1,41 @@
 ﻿@page "/"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (isLoggedIn)
+{
+    <h1>Hello, @Username!</h1>
+    <button @onclick="Logout" class="btn btn-secondary">Logout</button>
+}
+else
+{
+    <h1>Welcome to your new app.</h1>
+    <p>Please <a href="/login">login</a> or <a href="/register">register</a>.</p>
+}
 
-Welcome to your new app.
+@code {
+    private string Username { get; set; } = "";
+    private bool isLoggedIn = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.Initialize();
+        var token = await AuthService.GetToken();
+        if (!string.IsNullOrEmpty(token))
+        {
+            isLoggedIn = true;
+            Username = await AuthService.GetUsername();
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        isLoggedIn = false;
+        Username = "";
+        Navigation.NavigateTo("/login");
+    }
+
+}

@@ -1,35 +1,93 @@
 ﻿@page "/register"
-@inject AuthService AuthService
+@inject HttpClient Http
 @inject NavigationManager Navigation
 
 <h3>Register</h3>
+<p>Please fill in your details and verify your email with a verification code.</p>
 
-@if (!string.IsNullOrEmpty(errorMessage))
+<div>
+    <label>Username:</label>
+    <input @bind="Username" placeholder="Username" class="form-control mb-2" />
+</div>
+<div>
+    <label>Email:</label>
+    <input @bind="Email" placeholder="Email" class="form-control mb-2" />
+</div>
+<div>
+    <label>Password:</label>
+    <input @bind="Password" type="password" placeholder="Password" class="form-control mb-2" />
+</div>
+
+<div class="mb-2">
+    <button @onclick="SendVerificationCode" class="btn btn-primary">Sent verify code</button>
+</div>
+
+<div>
+    <label>Verification Code:</label>
+    <input @bind="VerificationCode" placeholder="Verification Code" class="form-control mb-2" />
+</div>
+
+<button @onclick="RegisterUser" class="btn btn-primary">Register</button>
+
+@if (!string.IsNullOrEmpty(Message))
 {
-    <p style="color: red">@errorMessage</p>
+    <p class="text-success mt-2">@Message</p>
 }
-
-<input @bind="Username" placeholder="Username" />
-<input @bind="Email" placeholder="Email" />
-<input @bind="Password" type="password" placeholder="Password" />
-<button @onclick="RegisterUser">Register</button>
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger mt-2">@ErrorMessage</p>
+}
 
 @code {
     private string Username { get; set; }
     private string Email { get; set; }
     private string Password { get; set; }
-    private string errorMessage;
+    private string VerificationCode { get; set; }
+    private string Message { get; set; }
+    private string ErrorMessage { get; set; }
+
+    private async Task SendVerificationCode()
+    {
+        Message = "";
+        ErrorMessage = "";
+        var response = await Http.PostAsJsonAsync("api/auth/forgot-password", new { email = Email });
+        if (response.IsSuccessStatusCode)
+        {
+            Message = "Code already sent！";
+        }
+        else
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            ErrorMessage = $"Error: {err}";
+        }
+    }
 
     private async Task RegisterUser()
     {
-        var success = await AuthService.Register(Username, Email, Password);
-        if (success)
+        Message = "";
+        ErrorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(Username) ||
+            string.IsNullOrWhiteSpace(Email) ||
+            string.IsNullOrWhiteSpace(Password) ||
+            string.IsNullOrWhiteSpace(VerificationCode))
         {
+            ErrorMessage = "Please fill in all fields.";
+            return;
+        }
+
+        var payload = new { username = Username, email = Email, password = Password, verificationCode = VerificationCode };
+        var response = await Http.PostAsJsonAsync("api/auth/register", payload);
+        if (response.IsSuccessStatusCode)
+        {
+            Message = "Register success. Redirecting to login...";
+            await Task.Delay(1500);
             Navigation.NavigateTo("/login");
         }
         else
         {
-            errorMessage = "Registration failed.";
+            var err = await response.Content.ReadAsStringAsync();
+            ErrorMessage = $"Register fail: {err}";
         }
     }
 }

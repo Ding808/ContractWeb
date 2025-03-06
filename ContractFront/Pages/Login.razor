@@ -20,6 +20,11 @@
 </div>
 <button @onclick="HandleLogin" class="btn btn-primary">Login</button>
 
+<div class="mt-3">
+    <button class="btn btn-link" @onclick="NavigateToForgotPassword">Forgot Password?</button>
+    <button class="btn btn-link" @onclick="NavigateToRecoverUsername">Recover Username</button>
+</div>
+
 @code {
     private string Username { get; set; }
     private string Password { get; set; }
@@ -36,5 +41,15 @@
         {
             ErrorMessage = "Login Fail";
         }
+    }
+
+    private void NavigateToForgotPassword()
+    {
+        Navigation.NavigateTo("/forgot-password");
+    }
+
+    private void NavigateToRecoverUsername()
+    {
+        Navigation.NavigateTo("/recover-username");
     }
 }
