@@ -15,7 +15,7 @@
 
 @code {
     private string searchQuery = string.Empty;
-    private List<SearchResult> searchResults = new();
+    private List<ContractFront.Pages.CaseResearch.SearchResults.SearchResult> searchResults = new();
     private bool isLoading = false;
     private string? errorMessage;
 
@@ -36,13 +36,13 @@
                 return;
             }
 
-            searchResults = new List<SearchResult>
+            searchResults = new List<ContractFront.Pages.CaseResearch.SearchResults.SearchResult>
             {
                 new() { Title = "Sample Legal Case 1", Url = "https://example.com/case1", Snippet = "This is a sample case summary..." },
                 new() { Title = "Sample Legal Case 2", Url = "https://example.com/case2", Snippet = "Another example case study..." }
             };
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "An error occurred while retrieving results.";
         }
@@ -50,12 +50,5 @@
         {
             isLoading = false;
         }
-    }
-
-    private class SearchResult
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-        public string Snippet { get; set; } = string.Empty;
     }
 }

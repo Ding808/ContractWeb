@@ -1,5 +1,32 @@
-﻿<h3>SearchResults</h3>
+﻿@code {
+    [Parameter] public List<SearchResult>? Results { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public string? ErrorMessage { get; set; }
 
-@code {
+    // Temporary mock data for UI demonstration
+    private List<SearchResult> mockResults = new()
+    {
+        new() { Title = "Fake Case 1", Url = "https://example.com/case1", Snippet = "This is a sample case summary..." },
+        new() { Title = "Fake Case 2", Url = "https://example.com/case2", Snippet = "Another example case study..." }
+    };
 
+    // Temporary inline class (no backend needed)
+    public class SearchResult
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public string Snippet { get; set; } = string.Empty;
+    }
 }
+
+@* Fake the Results for UI Demo *@
+<ul class="list-group">
+    @foreach (var result in Results ?? mockResults) // Use mock data if Results is null
+    {
+        <li class="list-group-item">
+            <strong>@result.Title</strong><br />
+            <a href="@result.Url" target="_blank" class="text-decoration-none text-primary">@result.Url</a>
+            <p>@result.Snippet</p>
+        </li>
+    }
+</ul>
