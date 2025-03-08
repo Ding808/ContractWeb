@@ -1,5 +1,61 @@
-﻿<h3>InternetCaseResearch</h3>
+﻿@page "/case-research"
+
+<PageTitle>Internet Case Research</PageTitle>
+
+<h3 class="text-primary text-center">Internet Case Research</h3>
+
+<div class="container mt-4">
+    <div class="input-group mb-3">
+        <input @bind="searchQuery" type="text" class="form-control" placeholder="Enter legal search query..." />
+        <button @onclick="PerformSearch" class="btn btn-primary">Search</button>
+    </div>
+
+    <SearchResults Results="searchResults" IsLoading="isLoading" ErrorMessage="errorMessage" />
+</div>
 
 @code {
+    private string searchQuery = string.Empty;
+    private List<SearchResult> searchResults = new();
+    private bool isLoading = false;
+    private string? errorMessage;
 
+    private async Task PerformSearch()
+    {
+        isLoading = true;
+        errorMessage = null;
+        searchResults.Clear();
+
+        try
+        {
+            // Mocking API call
+            await Task.Delay(1000); // Simulating network delay
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                errorMessage = "Please enter a valid query.";
+                return;
+            }
+
+            searchResults = new List<SearchResult>
+            {
+                new() { Title = "Sample Legal Case 1", Url = "https://example.com/case1", Snippet = "This is a sample case summary..." },
+                new() { Title = "Sample Legal Case 2", Url = "https://example.com/case2", Snippet = "Another example case study..." }
+            };
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while retrieving results.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class SearchResult
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public string Snippet { get; set; } = string.Empty;
+    }
 }
