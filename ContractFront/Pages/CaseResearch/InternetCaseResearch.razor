@@ -1,54 +1,71 @@
 ﻿@page "/case-research"
 
-<PageTitle>Internet Case Research</PageTitle>
+<h3>Internet Case Research</h3>
 
-<h3 class="text-primary text-center">Internet Case Research</h3>
-
-<div class="container mt-4">
-    <div class="input-group mb-3">
-        <input @bind="searchQuery" type="text" class="form-control" placeholder="Enter legal search query..." />
-        <button @onclick="PerformSearch" class="btn btn-primary">Search</button>
-    </div>
-
-    <SearchResults Results="searchResults" IsLoading="isLoading" ErrorMessage="errorMessage" />
+<div class="alert alert-danger" role="alert" hidden="@(!showError)">
+    @errorMessage
 </div>
+
+<div class="mb-3">
+    <label for="searchQuery" class="form-label">Enter Legal Search Query</label>
+    <input type="text" id="searchQuery" class="form-control" @bind="searchQuery" placeholder="Type a legal query..." />
+</div>
+
+<button class="btn btn-primary" @onclick="PerformSearch">Perform Search</button>
+
+@if (searchPerformed)
+{
+    <div class="mt-3">
+        <h5>Search Results</h5>
+        @if (searchResults.Count > 0)
+        {
+            <ul class="list-group">
+                @foreach (var result in searchResults)
+                {
+                    <li class="list-group-item">@result</li>
+                }
+            </ul>
+            <button class="btn btn-success mt-2" @onclick="SaveResults">Save Search Results</button>
+        }
+        else
+        {
+            <div class="alert alert-warning" role="alert">No results found.</div>
+        }
+    </div>
+}
 
 @code {
     private string searchQuery = string.Empty;
-    private List<ContractFront.Pages.CaseResearch.SearchResults.SearchResult> searchResults = new();
-    private bool isLoading = false;
-    private string? errorMessage;
+    private bool searchPerformed = false;
+    private bool showError = false;
+    private string errorMessage = string.Empty;
+    private List<string> searchResults = new();
 
-    private async Task PerformSearch()
+    private void PerformSearch()
     {
-        isLoading = true;
-        errorMessage = null;
+        showError = false;
+        searchPerformed = false;
         searchResults.Clear();
 
-        try
+        if (string.IsNullOrWhiteSpace(searchQuery))
         {
-            // Mocking API call
-            await Task.Delay(1000); // Simulating network delay
+            showError = true;
+            errorMessage = "Search query cannot be empty.";
+            return;
+        }
 
-            if (string.IsNullOrWhiteSpace(searchQuery))
-            {
-                errorMessage = "Please enter a valid query.";
-                return;
-            }
+        // Mock search results (replace with real API call later)
+        searchResults.Add("Legal Case 1: Example Citation");
+        searchResults.Add("Legal Case 2: Another Citation");
+        searchPerformed = true;
+    }
 
-            searchResults = new List<ContractFront.Pages.CaseResearch.SearchResults.SearchResult>
-            {
-                new() { Title = "Sample Legal Case 1", Url = "https://example.com/case1", Snippet = "This is a sample case summary..." },
-                new() { Title = "Sample Legal Case 2", Url = "https://example.com/case2", Snippet = "Another example case study..." }
-            };
-        }
-        catch (Exception)
-        {
-            errorMessage = "An error occurred while retrieving results.";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+    private void SaveResults()
+    {
+        // Mock save operation
+        showError = false;
+        errorMessage = "Search results saved successfully.";
+        showError = true; // Simulate a success alert
     }
 }
+
