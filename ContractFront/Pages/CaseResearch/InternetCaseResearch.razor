@@ -7,8 +7,7 @@
 </div>
 
 <div class="mb-3">
-    <label for="searchQuery" class="form-label">Enter Legal Search Query</label>
-    <input type="text" id="searchQuery" class="form-control" @bind="searchQuery" placeholder="Type a legal query..." />
+    <input type="text" id="searchQuery" class="form-control" @bind="searchQuery" placeholder="Enter a legal query..." />
 </div>
 
 <button class="btn btn-primary" @onclick="PerformSearch">Perform Search</button>
@@ -55,8 +54,8 @@
         }
 
         // Mock search results (replace with real API call later)
-        searchResults.Add("Legal Case 1: Example Citation");
-        searchResults.Add("Legal Case 2: Another Citation");
+        searchResults.Add("Credible legal source 1: Citation URL");
+        searchResults.Add("Credible legal source 2: Citation URL");
         searchPerformed = true;
     }
 
